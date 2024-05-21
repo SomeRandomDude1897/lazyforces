@@ -65,8 +65,8 @@ void help(std::shared_ptr<tcp::socket> socket)
     "list of server commands:\n"
     "help - get this list of commands\n"
     "tasklist - get list of tasks avaiable\n"
-    "expand [task_number]\n"
-    "send [task_number] [file_name]";
+    "expand [task_number] - show description of task [task number]\n"
+    "send [task_number] [file_directory] - send code for task from the specified directory";
     send_to_client(socket, help_text);
 }
 
@@ -118,26 +118,27 @@ void test_code(std::shared_ptr<tcp::socket> socket, std::string source_code, std
             send_to_client(socket, "No such task found");
             return;
         }
+        std::ofstream f;
+        f.open("solution.cpp");
+        f << source_code;
+        f.close();
+        try
+        {
+            system("g++ solution.cpp -o solution.out");
+        }
+        catch (std::exception& error)
+        {
+            send_to_client(socket, "Compilation Error");
+            return;
+        }
+
         for (int i = 0; i < local_problem_data[task]["tests"].size(); i++)
         {
-
-            std::ofstream f;
-            f.open("solution.cpp");
-            f << source_code;
-            f.close();
             std::ofstream inp_f;
             inp_f.open("input.txt");
             inp_f << static_cast<std::string>(local_problem_data[task]["tests"][i]["query"]);
             inp_f.close();
-            try
-            {
-                system("g++ solution.cpp -o solution.out");
-            }
-            catch (std::exception& error)
-            {
-                send_to_client(socket, "Runtime error on test " + std::to_string(tests_passed));
-                return;
-            }
+
             auto start = std::chrono::high_resolution_clock::now();
             std::string command = "firejail --rlimit-nproc=1 --rlimit-cpu=" + static_cast<std::string>(local_problem_data[task]["time limit"]) +  " ./solution.out < input.txt > output.txt";
             system(command.c_str());
@@ -187,14 +188,14 @@ void process_client(std::shared_ptr<tcp::socket> socket)
     if (query.substr(0, 4) == "help") {help(socket);}
     else if (query.substr(0, 8) == "tasklist") {get_task_list(socket);}
     else if (query.substr(0, 6) == "expand") {expand_task(socket, query.substr(7, query.size()-7));}
-    else if (query.substr(0, 4) == "send") {test_code(socket, get_code_from_client(socket, query.substr(5, query.size()-5)), query.substr(5, 3));}
+    else if (query.size() > 8 && query.substr(0, 4) == "send") {test_code(socket, get_code_from_client(socket, query.substr(5, query.size()-5)), query.substr(5, 3));}
     else {send_to_client(socket, "type 'help' for command list.");}
 }
 
 int main()
 {
     load_problem_data();
-    boost::asio::thread_pool pool(4);
+    boost::asio::thread_pool pool(std::thread::hardware_concurrency());
 
     try 
     {
