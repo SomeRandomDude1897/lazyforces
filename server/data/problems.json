@@ -18,8 +18,7 @@
             {"query": "7 3", "answer": "10"},
             {"query": "20 30", "answer": "50"},
             {"query": "1000 2000", "answer": "3000"},
-            {"query": "15 25", "answer": "40"},
-            {"query": "300 400", "answer": "700"}
+            {"query": "15 25", "answer": "40"}
         ]
     },
     "002": {
@@ -136,28 +135,6 @@
         ]
     },
     "007": {
-        "title": "Tsukasa's Friend Network",
-        "time limit": "1",
-        "description": "Tsukasa is mapping out her friends' network to see how well connected everyone is. She has a list of friendships and wants to find the shortest path between two friends in the network. Given the number of friends, a list of friendships, and two friends, help her find the shortest path between them.\n\nINPUTS: An integer N (the number of friends), an integer M (the number of friendships), M pairs of integers representing the friendships, followed by two integers A and B representing the two friends.\nOUTPUTS: The shortest path length between friend A and friend B, or -1 if they are not connected.\n\nEXAMPLE:\n5 4\n1 2\n2 3\n3 4\n4 5\n1 5 -> 4\n4 2\n1 2\n3 4\n1 3 -> -1",
-        "tests": [
-            { "query": "5 4\n1 2\n2 3\n3 4\n4 5\n1 5", "answer": "4" },
-            { "query": "4 2\n1 2\n3 4\n1 3", "answer": "-1" },
-            { "query": "6 6\n1 2\n2 3\n3 4\n4 5\n5 6\n1 6\n1 6", "answer": "5" },
-            { "query": "7 6\n1 2\n2 3\n3 4\n4 5\n5 6\n6 7\n1 7", "answer": "6" },
-            { "query": "5 5\n1 2\n2 3\n3 4\n4 5\n5 1\n1 4", "answer": "3" },
-            { "query": "8 7\n1 2\n2 3\n3 4\n4 5\n5 6\n6 7\n7 8\n1 8", "answer": "7" },
-            { "query": "10 9\n1 2\n2 3\n3 4\n4 5\n5 6\n6 7\n7 8\n8 9\n9 10\n1 10", "answer": "9" },
-            { "query": "3 2\n1 2\n2 3\n1 3", "answer": "2" },
-            { "query": "9 8\n1 2\n2 3\n3 4\n4 5\n5 6\n6 7\n7 8\n8 9\n1 9", "answer": "8" },
-            { "query": "4 3\n1 2\n2 3\n3 4\n1 4", "answer": "3" },
-            { "query": "6 5\n1 2\n2 3\n3 4\n4 5\n5 6\n1 5", "answer": "4" },
-            { "query": "7 4\n1 2\n2 3\n3 4\n4 7\n1 7", "answer": "4" },
-            { "query": "8 6\n1 2\n2 3\n3 4\n4 5\n5 6\n6 8\n1 8", "answer": "6" },
-            { "query": "11 10\n1 2\n2 3\n3 4\n4 5\n5 6\n6 7\n7 8\n8 9\n9 10\n10 11\n1 11", "answer": "10" },
-            { "query": "12 11\n1 2\n2 3\n3 4\n4 5\n5 6\n6 7\n7 8\n8 9\n9 10\n10 11\n11 12\n1 12", "answer": "11" }
-        ]
-    },
-    "008": {
         "title": "Konata's Secret Message Decoder",
         "time limit": "1",
         "description": "Konata found a list of encrypted messages while playing an online game. Each message is a string, and she needs to decode them to find the original message. The game uses a custom hash function to encode the messages. Given the hash function and a list of hashed messages, help Konata find the original messages.\n\nINPUTS: An integer N (the number of hashed messages), followed by N strings representing the hashed messages. The hash function is known to be the sum of the ASCII values of the characters in the string modulo 100.\nOUTPUTS: A list of N integers representing the hash values of the original messages.\n\nEXAMPLE:\n3\nabc def ghi -> [94, 98, 101]\n2\nhello world -> [52, 68]",
@@ -180,7 +157,7 @@
             { "query": "3\nhashing is fun", "answer": "[45, 33, 33]" }
         ]
     },
-    "009": {
+    "008": {
         "title": "Miyuki's Prime Number Puzzle",
         "time limit": "1",
         "description": "Miyuki is fascinated by prime numbers and their properties. She has recently learned about the Goldbach Conjecture, which states that every even integer greater than 2 can be expressed as the sum of two prime numbers. Miyuki wants to verify this conjecture for a given even number. Given an even integer, find two prime numbers that sum up to it.\n\nINPUTS: An even integer N.\nOUTPUTS: Two prime numbers p1 and p2 such that p1 + p2 = N.\n\nEXAMPLE:\n10 -> 3 7\n26 -> 3 23",

@@ -12,6 +12,7 @@ using boost::asio::ip::tcp;
 
 nlohmann::json problem_data;
 std::mutex problem_mutex;
+std::mutex cout_mutex;
 
 void load_problem_data()
 {
@@ -95,6 +96,13 @@ void get_task_list(std::shared_ptr<tcp::socket> socket)
     send_to_client(socket, responce);
 }
 
+void clear_directory(std::string ip)
+{
+    system(("rm testing/input" + ip + ".txt").c_str());   
+    system(("rm testing/output" + ip + ".txt").c_str());  
+    system(("rm testing/solution" + ip + ".out").c_str()); 
+}
+
 void test_code(std::shared_ptr<tcp::socket> socket, std::string source_code, std::string task)
 {
     nlohmann::json local_problem_data;
@@ -105,6 +113,9 @@ void test_code(std::shared_ptr<tcp::socket> socket, std::string source_code, std
     {
         int tests_passed = 0;
         bool flag = false;
+        cout_mutex.lock();
+        cout_mutex.unlock();
+
         for (auto& x : local_problem_data.items())
         {
             if (task == static_cast<std::string>(x.key()))
@@ -119,38 +130,45 @@ void test_code(std::shared_ptr<tcp::socket> socket, std::string source_code, std
             return;
         }
         std::ofstream f;
-        f.open("solution.cpp");
+        std::string solution_file_name = "testing/solution" + socket->remote_endpoint().address().to_string();
+        f.open(solution_file_name + ".cpp");
         f << source_code;
         f.close();
         try
         {
-            system("g++ solution.cpp -o solution.out");
+            system(("g++ " + solution_file_name + ".cpp -o " + solution_file_name + ".out").c_str());
+            system(("rm " + solution_file_name + ".cpp").c_str());
         }
         catch (std::exception& error)
         {
             send_to_client(socket, "Compilation Error");
+            system(("rm " + solution_file_name + ".cpp").c_str());
             return;
         }
 
         for (int i = 0; i < local_problem_data[task]["tests"].size(); i++)
         {
             std::ofstream inp_f;
-            inp_f.open("input.txt");
+            std::string input_file_name = "testing/input" + socket->remote_endpoint().address().to_string() + ".txt";
+            std::string output_file_name = "testing/output" + socket->remote_endpoint().address().to_string() + ".txt";
+            inp_f.open(input_file_name);
             inp_f << static_cast<std::string>(local_problem_data[task]["tests"][i]["query"]);
             inp_f.close();
 
             auto start = std::chrono::high_resolution_clock::now();
-            std::string command = "firejail --rlimit-nproc=1 --rlimit-cpu=" + static_cast<std::string>(local_problem_data[task]["time limit"]) +  " ./solution.out < input.txt > output.txt";
+            std::string command = "firejail --rlimit-nproc=1 --rlimit-cpu=" + static_cast<std::string>(local_problem_data[task]["time limit"]) +  
+            " ./" + solution_file_name + ".out < " + input_file_name + " > " + output_file_name;
             system(command.c_str());
             double execution_time = (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start)).count()/1000.0;
             if (execution_time > stod(static_cast<std::string>(local_problem_data[task]["time limit"])))
             {
                 send_to_client(socket, "Time limit exceeded on test " + std::to_string(tests_passed + 1));
+                clear_directory(socket->remote_endpoint().address().to_string());
                 return;
             }
             std::string answer;
             std::ifstream ans_f;
-            ans_f.open("output.txt");
+            ans_f.open(output_file_name);
             while (!ans_f.eof())
             {
                 answer += ans_f.get();
@@ -159,11 +177,13 @@ void test_code(std::shared_ptr<tcp::socket> socket, std::string source_code, std
             if (answer != static_cast<std::string>(local_problem_data[task]["tests"][i]["answer"]) && answer != static_cast<std::string>(local_problem_data[task]["tests"][i]["answer"]) + "\n")
             {
                 send_to_client(socket, "Wrong answer on test " + std::to_string(tests_passed + 1));
+                clear_directory(socket->remote_endpoint().address().to_string());
                 return;
             }
             tests_passed++;
         }
         send_to_client(socket, "Accepted");
+        clear_directory(socket->remote_endpoint().address().to_string());
     }
 }
 
