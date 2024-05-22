@@ -1,15 +1,6 @@
-#include <sys/stat.h>
-#include <unistd.h>
+#include "../headers/client.h"
 
-#include <boost/array.hpp>
-#include <boost/asio.hpp>
-#include <fstream>
-#include <iostream>
-#include <string>
-
-using boost::asio::ip::tcp;
-
-void send_to_server(std::shared_ptr<tcp::socket> socket, std::string message) {
+void client::send_to_server(std::shared_ptr<tcp::socket> socket, std::string message) {
   size_t message_size = message.size();
 
   boost::asio::write(*socket,
@@ -19,29 +10,23 @@ void send_to_server(std::shared_ptr<tcp::socket> socket, std::string message) {
   boost::asio::write(*socket, boost::asio::buffer(&message[0], message_size));
 }
 
-bool send_solution(std::shared_ptr<tcp::socket> socket, std::string file_name) {
-  try {
-    std::ifstream f(file_name);
-    std::string file_content;
-    if (f.good()) {
-      while (!f.eof()) {
-        file_content += f.get();
-      }
-    } else {
-      throw std::invalid_argument("no such file or directory");
-      return false;
+bool client::send_solution(std::shared_ptr<tcp::socket> socket, std::string file_name) {
+  std::ifstream f(file_name);
+  std::string file_content;
+  if (f.good()) {
+    while (!f.eof()) {
+      file_content += f.get();
     }
-    f.close();
-    send_to_server(socket, file_content.substr(0, file_content.size() - 1));
-  } catch (std::exception& error) {
-    std::cerr << error.what() << '\n';
-    send_to_server(socket, "no such file or directory");
-    return false;
   }
+  f.close();
+  send_to_server(socket, file_content.substr(0, file_content.size() - 1));
+  if (file_content.substr(0, file_content.size() - 1).size() == 0) {
+  std::cout << "No such file or directory\n";
+  return false;};
   return true;
 }
 
-std::string get_from_server(std::shared_ptr<tcp::socket> socket) {
+std::string client::get_from_server(std::shared_ptr<tcp::socket> socket) {
   std::string message;
   size_t message_size;
   boost::asio::read(*socket,
@@ -52,23 +37,19 @@ std::string get_from_server(std::shared_ptr<tcp::socket> socket) {
   return message;
 }
 
-int main(int argc, char* argv[]) {
-  if (argc != 2) {
-    throw std::logic_error("incorrect terminal input data");
-    return -1;
-  }
+void client::run(std::string ip) {
   while (true) {
     std::string query;
     std::getline(std::cin, query);
     try {
       boost::asio::io_context context;
       tcp::resolver resolver(context);
-      tcp::resolver::results_type endpoints = resolver.resolve(argv[1], "8080");
+      tcp::resolver::results_type endpoints = resolver.resolve(ip, "8080");
       auto socket = std::make_shared<tcp::socket>(context);
 
       boost::asio::connect(*socket, endpoints);
 
-      send_to_server(socket, query);
+      send_to_server(socket, query); 
 
       std::string responce = get_from_server(socket);
 
