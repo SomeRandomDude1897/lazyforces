@@ -1,10 +1,15 @@
 #include "../headers/server.h"
 
+// У нас есть класс сервера, где они должны находиться , они же к нему относятся
 std::mutex problem_mutex;
 std::mutex cout_mutex;
 
 void server::load_problem_data() {
   std::ifstream f("data/problems.json");
+  // Я не очень хочу разбираться с бибилиотечкой, но насколько я понимаю
+  // тут мы считываем сразу весь json. Где тут данные хранятся, в куче же?
+  // Если у нас гигантское количество задач, то и оперативка кончится может.
+  // Как будто надо парсить конкретную задачу, а не все сразу
   problem_data = nlohmann::json::parse(f);
   f.close();
 }
@@ -16,6 +21,7 @@ std::string server::get_from_client(std::shared_ptr<tcp::socket> socket) {
   boost::asio::read(*socket,
                     boost::asio::buffer(&message_size, sizeof(message_size)));
   message.resize(message_size);
+  // Игнорировать не очень хорошо. Если все-таки не пришло, то что будешь делать?
   boost::system::error_code ignored_error;
   size_t len = socket->read_some(boost::asio::buffer(message), ignored_error);
   return message;
@@ -37,6 +43,9 @@ void server::expand_task(std::shared_ptr<tcp::socket> socket,
     nlohmann::json local_problem_data;
     problem_mutex.lock();
     local_problem_data = problem_data;
+    // Редко когда мьютекс используется в чистую. Проблема в том, что его закрытие
+    // нужно делать руками, а иногда это может не случиться (при тех же исключениях
+    // есть случаи) поэтому используются обёртки, которые открывают мьютекс в деструкторе
     problem_mutex.unlock();
     std::string responce = local_problem_data[task_number]["description"];
     send_to_client(socket, responce);
@@ -66,6 +75,7 @@ void server::get_task_list(std::shared_ptr<tcp::socket> socket) {
   std::string responce = "";
   for (int i = 1; i < local_problem_data.size() + 1; i++) {
     std::string task_number = "";
+    // Тут захардкожено, что задач двузначное количество? Нехорошо
     for (int j = 0; j < 3 - (std::to_string(i)).size(); j++) {
       task_number += "0";
     }
@@ -84,6 +94,7 @@ void clear_directory(std::string ip) {
   system(("rm testing/solution" + ip + ".out").c_str());
 }
 
+// Эту функцию стоило разделить на несколько. Тут явно перебор
 void server::test_code(std::shared_ptr<tcp::socket> socket,
                        std::string source_code, std::string task) {
   if (source_code == "")
@@ -96,10 +107,12 @@ void server::test_code(std::shared_ptr<tcp::socket> socket,
   problem_mutex.unlock();
   int tests_passed = 0;
   bool flag = false;
+  //??
   cout_mutex.lock();
   cout_mutex.unlock();
 
   for (auto& x : local_problem_data.items()) {
+    // А почему каст? Он же вроде и так строку возвращает
     if (task == static_cast<std::string>(x.key())) {
       flag = true;
       break;
@@ -195,7 +208,9 @@ std::string server::get_code_from_client(std::shared_ptr<tcp::socket> socket,
 
 void server::process_client(std::shared_ptr<tcp::socket> socket) {
   std::string query = get_from_client(socket);
-
+  // Тут как будто стоило применить более ООПшный подход. При увеличении
+  // количества команд тут будет абсолютное мясо. А полиморфмизм с классом
+  // команды может выглядеть аккуратно
   if (query.substr(0, 4) == "help") {
     help(socket);
   } else if (query.substr(0, 8) == "tasklist") {
@@ -229,6 +244,7 @@ int server::run() {
     pool.join();
 
   } catch (std::exception& error) {
+    //will the pool join?..
     std::cerr << error.what() << '\n';
   }
   return 0;

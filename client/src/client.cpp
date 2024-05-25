@@ -52,7 +52,11 @@ void client::run(std::string ip) {
       send_to_server(socket, query); 
 
       std::string responce = get_from_server(socket);
-
+      // Вообще расклад с взятием подстроки вот таким образом выглядит как шаткая
+      // конструкция. Если вдруг захочется изменить формат сообщения, то это 
+      // надо будет везде сильно менять. Стоит подумать над каким-то еще методом
+      // типа аргументов между разделителями (читать между разделителями, которые
+      // ищешь в строке) или еще что-то поумнее
       if (responce.substr(0, 17) == "awaiting solution") {
         bool succesfully_sent =
             send_solution(socket, responce.substr(22, responce.size() - 22));
