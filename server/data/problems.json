@@ -1,5 +1,5 @@
 {
-    "001": {
+    "1": {
         "title": "Konata and Kagami's Number Game",
         "time limit": "1",
         "description": "Konata and Kagami are playing a number game where they take two numbers and add them together. Help them by writing a function that takes two integers and returns their sum.\n\nINPUTS: Two space-separated integers.\nOUTPUTS: The sum of the two integers.\n\nEXAMPLE:\n1 2 -> 3\n2 3 -> 5",
@@ -66,7 +66,7 @@
             }
         ]
     },
-    "002": {
+    "2": {
         "title": "Konata's Croissant Dilemma",
         "time limit": "1",
         "description": "Konata has N croissants for today's lunch break. However, she wants to save K tastiest croissants for later. Help her pick the K-th tastiest croissant.\n\nINPUTS: You are given N and K values in the first line. In the next line is an array of N integers, each symbolizing how tasty the croissant is.\nOUTPUTS: Return an integer value of how tasty the K-th croissant is.\n\nEXAMPLE:\n4 2\n1 2 3 4 -> 3\n5 1\n1 5 9 900 4 -> 900",
@@ -137,7 +137,7 @@
             }
         ]
     },
-    "003": {
+    "3": {
         "title": "Kagami's Data Analysis",
         "time limit": "1",
         "description": "Kagami wants to analyze some data from her studies. She needs to find the median of a list of numbers. Write a function to help her out.\n\nINPUTS: A single line with an integer N followed by N integers.\nOUTPUTS: Return the median of the list.\n\nEXAMPLE:\n5\n1 2 3 4 5 -> 3\n6\n1 2 3 4 5 6 -> 3.5",
@@ -204,7 +204,7 @@
             }
         ]
     },
-    "004": {
+    "4": {
         "title": "Tsukasa's Number Fun",
         "time limit": "1",
         "description": "Tsukasa is learning about numbers and their properties. She wants to find the sum of the digits of a number. Write a function to help her with this task.\n\nINPUTS: A single line with an integer N.\nOUTPUTS: Return the sum of the digits of N.\n\nEXAMPLE:\n123 -> 6\n456 -> 15",
@@ -275,7 +275,7 @@
             }
         ]
     },
-    "005": {
+    "5": {
         "title": "Konata's Study Plan",
         "time limit": "1",
         "description": "Konata is preparing for her exams and wants to maximize her study efficiency so she can spend more time playing computer. She has a list of subjects to study, each with a certain difficulty. She can study any number of subjects, but if she studies two subjects consecutively, the combined difficulty is the sum of their difficulties. She wants to study such that the sum of the difficulties of any two consecutive subjects does not exceed a given limit. Help her find the maximum number of subjects she can study.\n\nINPUTS: An integer N and an integer M, followed by a list of N integers representing the difficulty of each subject.\nOUTPUTS: Return the maximum number of subjects she can study without exceeding the given difficulty limit for any two consecutive subjects.\n\nEXAMPLE:\n5 10\n1 2 3 4 5 -> 5\n3 4\n3 1 2 -> 2",
@@ -346,7 +346,7 @@
             }
         ]
     },
-    "006": {
+    "6": {
         "title": "Kagami's Test Score Analysis",
         "time limit": "1",
         "description": "Kagami is analyzing her test scores to understand her performance trends. She wants to find the maximum average score over any contiguous subarray of scores. Given an array of her scores and the length of the subarray, help her find the maximum average score.\n\nINPUTS: An integer N (the number of scores), an integer K (the length of the subarray), followed by a list of N integers representing the scores.\nOUTPUTS: The maximum average score of any contiguous subarray of length K.\n\nEXAMPLE:\n5 3\n1 2 3 4 5 -> 4.0\n6 2\n1 1 1 1 1 1 -> 1.0",
@@ -413,7 +413,7 @@
             }
         ]
     },
-    "007": {
+    "7": {
         "title": "Konata's Secret Message Decoder",
         "time limit": "1",
         "description": "Konata found a list of encrypted messages while playing an online game. Each message is a string, and she needs to decode them to find the original message. The game uses a custom hash function to encode the messages. Given the hash function and a list of hashed messages, help Konata find the original messages.\n\nINPUTS: An integer N (the number of hashed messages), followed by N strings representing the hashed messages. The hash function is known to be the sum of the ASCII values of the characters in the string modulo 100.\nOUTPUTS: A list of N integers representing the hash values of the original messages.\n\nEXAMPLE:\n3\nabc def ghi -> [94, 98, 101]\n2\nhello world -> [52, 68]",
@@ -484,7 +484,7 @@
             }
         ]
     },
-    "008": {
+    "8": {
         "title": "Miyuki's Prime Number Puzzle",
         "time limit": "1",
         "description": "Miyuki is fascinated by prime numbers and their properties. She has recently learned about the Goldbach Conjecture, which states that every even integer greater than 2 can be expressed as the sum of two prime numbers. Miyuki wants to verify this conjecture for a given even number. Given an even integer, find two prime numbers that sum up to it.\n\nINPUTS: An even integer N.\nOUTPUTS: Two prime numbers p1 and p2 such that p1 + p2 = N.\n\nEXAMPLE:\n10 -> 3 7\n26 -> 3 23",
